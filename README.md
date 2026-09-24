@@ -1,28 +1,30 @@
-# Sales Dashboard Lab - Q4 2026
+# Insecure CI/CD Pipeline Lab - October 2026
 
-Welcome to the Sales Dashboard development exercise! You'll build a simple web dashboard to visualize our quarterly sales data.
+Welcome to the CI/CD Security hands-on lab! You'll identify and fix common security vulnerabilities in CI/CD pipelines.
 
 ## Lab Overview
 
-In this lab, you'll create a Flask-based dashboard that displays sales metrics, team performance, and regional data. This is a hands-on exercise to practice working with data visualization and Flask.
+In this lab, you'll work with a sample application that has an **insecure GitHub Actions CI/CD pipeline**. Your task is to identify security vulnerabilities in the pipeline configuration and fix them.
 
-**Estimated time:** 45-60 minutes
+**Estimated time:** 60-90 minutes
 
 ## Business Context
 
-The sales team needs a simple dashboard to track:
-- Monthly revenue trends
-- Top performing products
-- Regional sales breakdown
-- Sales rep performance metrics
+Modern DevOps practices rely heavily on CI/CD pipelines, but they often introduce security risks:
+- Exposed secrets and credentials
+- Overly permissive permissions
+- Unverified third-party actions
+- Lack of security scanning
+- Insecure artifact handling
 
-Your task is to complete the partially-built dashboard.
+Your task is to secure our CI/CD pipeline following industry best practices.
 
 ## Prerequisites
 
 - Python 3.7 or higher
-- Basic understanding of Flask
-- Familiarity with data manipulation (helpful but not required)
+- Basic understanding of CI/CD concepts
+- Familiarity with GitHub Actions (helpful but not required)
+- Understanding of security principles
 
 ## Setup Instructions
 
@@ -56,72 +58,106 @@ The dashboard should now be running on `http://localhost:5000`
 
 ## Lab Exercises
 
-### Exercise 1: Complete Revenue Chart (15 min)
+### Exercise 1: Secrets Management (20 min)
 
-The monthly revenue chart is incomplete. Finish the implementation in `app.py`.
+The GitHub Actions workflow in `.github/workflows/ci.yml` has hardcoded secrets.
 
-**Task:** Complete the `/api/revenue` endpoint to return monthly data
+**Vulnerabilities:**
+- Hardcoded API keys in workflow file
+- Database credentials committed to repo
+- AWS credentials exposed
 
-**Expected Output:** JSON with month and revenue for Q3 2026
+**Task:** Identify all hardcoded secrets and implement proper secret management
 
-### Exercise 2: Add Product Rankings (15 min)
+### Exercise 2: Dependency Security (20 min)
 
-Create an endpoint that returns top 5 products by revenue.
+The CI pipeline doesn't scan for vulnerable dependencies.
 
-**Task:** Implement `/api/top-products` endpoint
+**Task:**
+- Add dependency scanning (pip-audit, safety, or similar)
+- Configure vulnerability reporting
+- Set up automated dependency updates
 
-**Data:** Use the sample data in `data/products.csv`
+### Exercise 3: Permission Hardening (15 min)
 
-### Exercise 3: Regional Breakdown (15 min)
+The workflow uses overly permissive GitHub token permissions.
 
-Display sales by region (North, South, East, West).
+**Task:**
+- Review `permissions:` in workflow
+- Apply principle of least privilege
+- Document why each permission is needed
 
-**Task:** Complete the `/api/regions` endpoint and add a pie chart to the frontend
+### Exercise 4: Supply Chain Security (20 min)
 
-### Exercise 4: Sales Rep Leaderboard (15 min)
+The pipeline uses third-party GitHub Actions without verification.
 
-Show top 10 sales reps by total sales amount.
+**Task:**
+- Pin action versions to specific commit SHAs
+- Verify action sources
+- Add checksum verification for dependencies
 
-**Task:** Implement `/api/sales-reps` endpoint
+### Exercise 5: Secure Artifact Handling (15 min)
+
+Build artifacts are uploaded without security controls.
+
+**Task:**
+- Add artifact signing
+- Implement integrity checks
+- Configure retention policies
 
 ## Verification
 
-Test your endpoints:
+Test the application:
 
 ```bash
-# Test revenue endpoint
-curl http://localhost:5000/api/revenue
+# Run the Flask app
+python app.py
 
-# Test products endpoint
-curl http://localhost:5000/api/top-products
-
-# Run automated tests
+# Run security checks (add these to CI!)
+pip-audit
+bandit -r .
 pytest tests/
+
+# Validate your CI/CD fixes
+cat .github/workflows/ci.yml  # Review your changes
 ```
 
 ## Submission
 
 Once completed:
-1. Ensure all endpoints return valid JSON
-2. Verify the dashboard displays all charts correctly
-3. Run `pytest tests/` - all tests should pass
-4. Submit your `app.py` file to the training portal
+1. All secrets removed from code and configs
+2. Security scanning added to CI pipeline
+3. Workflow permissions follow least privilege
+4. All third-party actions pinned and verified
+5. Submit your fixed `.github/workflows/ci.yml` file
 
-## Sample Data
+## Vulnerable Files to Review
 
-Sample sales data is provided in the `data/` directory:
-- `sales.csv` - Monthly sales transactions
-- `products.csv` - Product catalog
-- `reps.csv` - Sales representatives
+- `.github/workflows/ci.yml` - **Main focus**: Insecure CI/CD pipeline
+- `.env.example` - Check for accidentally committed secrets
+- `requirements.txt` - Review for known vulnerabilities
+- `deploy.sh` - Insecure deployment script
+- `docker-compose.yml` - Container security issues
 
 ## Resources
 
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Chart.js for visualizations](https://www.chartjs.org/)
+- [GitHub Actions Security Hardening](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
+- [OWASP CI/CD Security Top 10](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
+- [Supply Chain Levels for Software Artifacts (SLSA)](https://slsa.dev/)
+- [OpenSSF Scorecard](https://github.com/ossf/scorecard)
 
 ## Need Help?
 
-Check `HINTS.md` for guidance or ask the training team.
+Check `HINTS.md` for guidance or ask the security training team.
+
+## Bonus Challenges
+
+If you finish early:
+- Add SAST scanning with CodeQL
+- Implement signed commits verification
+- Add container image scanning
+- Set up SBOM generation
+- Configure branch protection rules
 
 ---
-**Developer Training Program - Q4 2026**
+**Security Training Initiative - October 2026**

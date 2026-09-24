@@ -1,0 +1,83 @@
+version: '3.8'
+
+# INSECURE DOCKER COMPOSE CONFIGURATION - FOR TRAINING PURPOSES
+# Contains multiple security vulnerabilities
+
+services:
+  web:
+    build: .
+    ports:
+      - "80:5000"  # VULNERABILITY 1: Running on privileged port
+    environment:
+      # VULNERABILITY 2: Hardcoded secrets in compose file
+      - DATABASE_URL=postgresql://admin:SuperSecret123@db:5432/appdb
+      - SECRET_KEY=super-secret-key-do-not-share
+      - API_TOKEN=sk-1234567890abcdefghijklmnopqrst
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      # VULNERABILITY 3: Debug mode enabled in production
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      # VULNERABILITY 4: Mounting sensitive host directories
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.ssh:/root/.ssh:ro
+      - ~/.aws:/root/.aws:ro
+    # VULNERABILITY 5: Running as root
+    user: root
+    # VULNERABILITY 6: No resource limits
+    # VULNERABILITY 7: Overly permissive capabilities
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    # VULNERABILITY 8: Privileged mode
+    privileged: true
+    networks:
+      - app-network
+
+  db:
+    image: postgres:latest  # VULNERABILITY 9: Using 'latest' tag
+    environment:
+      # VULNERABILITY 10: Default/weak credentials
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=appdb
+    ports:
+      # VULNERABILITY 11: Database exposed to host
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # VULNERABILITY 12: Mounting sensitive data without encryption
+      - ./backups:/backups
+    # VULNERABILITY 13: No health check
+    networks:
+      - app-network
+
+  redis:
+    image: redis  # VULNERABILITY 14: No version pinning
+    ports:
+      # VULNERABILITY 15: Redis exposed without authentication
+      - "6379:6379"
+    # VULNERABILITY 16: No password protection
+    command: redis-server
+    networks:
+      - app-network
+
+  # VULNERABILITY 17: Running unnecessary services
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    # VULNERABILITY 18: Default bridge network (no isolation)
+    driver: bridge
+
+volumes:
+  db-data:
+    # VULNERABILITY 19: Unencrypted volume

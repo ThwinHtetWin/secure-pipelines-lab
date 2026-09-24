@@ -1,0 +1,108 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+# WARNING: This workflow contains INTENTIONAL security vulnerabilities for training purposes
+# DO NOT use this in production!
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # VULNERABILITY 1: Overly permissive permissions
+    permissions: write-all
+
+    steps:
+    - name: Checkout code
+      # VULNERABILITY 2: Using unpinned third-party action
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      # VULNERABILITY 3: Another unpinned action
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # VULNERABILITY 4: No dependency verification
+        pip install -r requirements.txt
+
+    - name: Run tests
+      env:
+        # VULNERABILITY 5: Hardcoded secrets in workflow
+        DATABASE_URL: postgresql://admin:SuperSecret123@db.company.com:5432/prod
+        API_KEY: sk-1234567890abcdef1234567890abcdef
+        AWS_ACCESS_KEY_ID: AKIAIOSFODNN7EXAMPLE
+        AWS_SECRET_ACCESS_KEY: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+      run: |
+        pytest tests/
+
+    - name: Build application
+      run: |
+        # VULNERABILITY 6: Exposing secrets in build logs
+        echo "Building with API key: $API_KEY"
+        python -m build
+      env:
+        API_KEY: sk-1234567890abcdef1234567890abcdef
+
+    - name: Upload artifacts
+      # VULNERABILITY 7: Unpinned action + no artifact verification
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/
+        # VULNERABILITY 8: No retention policy
+        retention-days: 90
+
+    - name: Deploy to production
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # VULNERABILITY 9: Insecure deployment script
+        chmod +x deploy.sh
+        ./deploy.sh
+      env:
+        # VULNERABILITY 10: More hardcoded credentials
+        DEPLOY_TOKEN: ghp_1234567890abcdefghijklmnopqrstuvwxyz
+        SSH_KEY: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpAIBAAKCAQEA...(truncated)\n-----END RSA PRIVATE KEY-----"
+
+    - name: Notify deployment
+      # VULNERABILITY 11: Using community action without verification
+      uses: some-random-org/slack-notify@master
+      with:
+        webhook-url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX
+        message: "Deployment completed!"
+
+    - name: Security scan
+      # VULNERABILITY 12: Security scanning commented out!
+      # TODO: Add security scanning before deployment
+      # run: |
+      #   pip install safety
+      #   safety check
+      #   bandit -r .
+      continue-on-error: true
+      run: echo "Security scanning disabled for speed"
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build Docker image
+      run: |
+        # VULNERABILITY 13: Building with secrets in image
+        docker build \
+          --build-arg API_KEY=sk-prod-1234567890 \
+          --build-arg DB_PASSWORD=ProductionPassword123 \
+          -t myapp:latest .
+
+    - name: Push to registry
+      run: |
+        # VULNERABILITY 14: Hardcoded registry credentials
+        echo "SuperSecretDockerPassword" | docker login -u deployer --password-stdin
+        docker push myapp:latest
