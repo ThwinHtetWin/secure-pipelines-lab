@@ -1,18 +1,28 @@
-# API Security Lab - October 2026
+# Sales Dashboard Lab - Q4 2026
 
-Welcome to the API Security hands-on lab! This exercise will help you understand common API security vulnerabilities and how to fix them.
+Welcome to the Sales Dashboard development exercise! You'll build a simple web dashboard to visualize our quarterly sales data.
 
 ## Lab Overview
 
-In this lab, you'll work with a simple Flask API that has several security vulnerabilities. Your task is to identify and fix them.
+In this lab, you'll create a Flask-based dashboard that displays sales metrics, team performance, and regional data. This is a hands-on exercise to practice working with data visualization and Flask.
 
 **Estimated time:** 45-60 minutes
+
+## Business Context
+
+The sales team needs a simple dashboard to track:
+- Monthly revenue trends
+- Top performing products
+- Regional sales breakdown
+- Sales rep performance metrics
+
+Your task is to complete the partially-built dashboard.
 
 ## Prerequisites
 
 - Python 3.7 or higher
-- Basic understanding of REST APIs
-- Familiarity with Flask (helpful but not required)
+- Basic understanding of Flask
+- Familiarity with data manipulation (helpful but not required)
 
 ## Setup Instructions
 
@@ -42,54 +52,76 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The API should now be running on `http://localhost:5000`
+The dashboard should now be running on `http://localhost:5000`
 
 ## Lab Exercises
 
-### Exercise 1: SQL Injection (15 min)
+### Exercise 1: Complete Revenue Chart (15 min)
 
-Test the `/api/users` endpoint for SQL injection vulnerabilities.
+The monthly revenue chart is incomplete. Finish the implementation in `app.py`.
 
-**Task:** Fix the vulnerable query in `app.py`
+**Task:** Complete the `/api/revenue` endpoint to return monthly data
 
-### Exercise 2: Authentication Bypass (15 min)
+**Expected Output:** JSON with month and revenue for Q3 2026
 
-The `/api/admin` endpoint has weak authentication. Can you bypass it?
+### Exercise 2: Add Product Rankings (15 min)
 
-**Task:** Implement proper authentication
+Create an endpoint that returns top 5 products by revenue.
 
-### Exercise 3: IDOR (Insecure Direct Object Reference) (15 min)
+**Task:** Implement `/api/top-products` endpoint
 
-Check if users can access other users' data at `/api/user/<id>`
+**Data:** Use the sample data in `data/products.csv`
 
-**Task:** Add proper authorization checks
+### Exercise 3: Regional Breakdown (15 min)
 
-### Exercise 4: Rate Limiting (10 min)
+Display sales by region (North, South, East, West).
 
-The API has no rate limiting. Add it to prevent abuse.
+**Task:** Complete the `/api/regions` endpoint and add a pie chart to the frontend
 
-**Task:** Implement rate limiting for sensitive endpoints
+### Exercise 4: Sales Rep Leaderboard (15 min)
+
+Show top 10 sales reps by total sales amount.
+
+**Task:** Implement `/api/sales-reps` endpoint
 
 ## Verification
 
-Run the test suite to verify your fixes:
+Test your endpoints:
 
 ```bash
+# Test revenue endpoint
+curl http://localhost:5000/api/revenue
+
+# Test products endpoint
+curl http://localhost:5000/api/top-products
+
+# Run automated tests
 pytest tests/
 ```
 
 ## Submission
 
-Once you've completed all exercises and all tests pass, submit your fixed `app.py` file.
+Once completed:
+1. Ensure all endpoints return valid JSON
+2. Verify the dashboard displays all charts correctly
+3. Run `pytest tests/` - all tests should pass
+4. Submit your `app.py` file to the training portal
+
+## Sample Data
+
+Sample sales data is provided in the `data/` directory:
+- `sales.csv` - Monthly sales transactions
+- `products.csv` - Product catalog
+- `reps.csv` - Sales representatives
 
 ## Resources
 
-- [OWASP API Security Top 10](https://owasp.org/www-project-api-security/)
-- [Flask Security Best Practices](https://flask.palletsprojects.com/en/3.0.x/security/)
+- [Flask Documentation](https://flask.palletsprojects.com/)
+- [Chart.js for visualizations](https://www.chartjs.org/)
 
 ## Need Help?
 
-Contact the training team or check the hints in `HINTS.md`
+Check `HINTS.md` for guidance or ask the training team.
 
 ---
-**Security Training Initiative - October 2026**
+**Developer Training Program - Q4 2026**

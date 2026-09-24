@@ -1,40 +1,53 @@
-# Hints for API Security Lab
+# Hints for Sales Dashboard Lab
 
-## Exercise 1: SQL Injection
+## Exercise 1: Revenue Endpoint
 
-**Hint 1:** Try sending a username parameter with a single quote: `?username='`
+**Hint 1:** The endpoint is already implemented! Just verify it works.
 
-**Hint 2:** Use parameterized queries instead of string concatenation
-
-**Solution:** Replace the vulnerable query with:
-```python
-cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+**Test it:**
+```bash
+curl http://localhost:5000/api/revenue
 ```
 
-## Exercise 2: Authentication Bypass
+**Expected output:** JSON with monthly revenue for July, August, September 2026
 
-**Hint 1:** The token is hardcoded and easy to guess
+## Exercise 2: Top Products
 
-**Hint 2:** Consider using Flask-Login or JWT tokens
+**Hint 1:** The products are already in the `SAMPLE_PRODUCTS` list
 
-**Solution:** Implement proper session-based authentication or JWT
+**Hint 2:** Sort by the 'revenue' field in descending order
 
-## Exercise 3: IDOR
-
-**Hint 1:** Any user can access any other user's data by changing the ID
-
-**Hint 2:** Add authorization checks to verify the logged-in user can access this resource
-
-**Solution:** Verify user identity before returning sensitive data
-
-## Exercise 4: Rate Limiting
-
-**Hint 1:** Use Flask-Limiter extension
-
-**Hint 2:** Apply limits like `@limiter.limit("5 per minute")`
-
-**Solution:**
+**Solution approach:**
 ```python
-from flask_limiter import Limiter
-limiter = Limiter(app, key_func=lambda: request.remote_addr)
+sorted_products = sorted(SAMPLE_PRODUCTS, key=lambda x: x['revenue'], reverse=True)[:5]
 ```
+
+## Exercise 3: Regional Breakdown
+
+**Hint 1:** The data is in `SAMPLE_REGIONS` list
+
+**Hint 2:** Return the data as JSON with proper structure
+
+**Test it:**
+```bash
+curl http://localhost:5000/api/regions
+```
+
+## Exercise 4: Sales Rep Leaderboard
+
+**Hint 1:** Sort by the 'sales' field to rank representatives
+
+**Hint 2:** Return top 10, even though sample data has only 5
+
+**Solution approach:**
+```python
+sorted_reps = sorted(SAMPLE_REPS, key=lambda x: x['sales'], reverse=True)[:10]
+```
+
+## Bonus: Add More Features
+
+If you finish early, try adding:
+- Filter revenue by specific month
+- Search products by name
+- Add pagination to results
+- Calculate total revenue across all regions
