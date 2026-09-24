@@ -31,8 +31,8 @@ Your task is to secure our CI/CD pipeline following industry best practices.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/ThwinHtetWin/api-security-lab.git
-cd api-security-lab
+git clone https://github.com/ThwinHtetWin/secure-pipelines-lab.git
+cd secure-pipelines-lab
 ```
 
 ### 2. Create Virtual Environment
