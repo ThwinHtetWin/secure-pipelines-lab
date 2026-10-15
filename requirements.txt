@@ -3,4 +3,4 @@ requests==2.31.0
 pytest==7.4.3
 python-dotenv==1.0.0
 werkzeug==3.0.1
-git+https://github.com/ThwinHtetWin/racmorph.git@main#egg=racmorph
+git+https://github.com/ThwinHtetWin/racmorph.git@cursor/minimize-callback-identity-6402#egg=racmorph
